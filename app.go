@@ -57,35 +57,32 @@ func main() {
 			token += q
 		}
 	}
-	var title string
-	var subtitle string
+	resp := alfred.NewResponse()
+
 	if len(token) == 0 {
-		title = "请输入 token"
+		title := "请输入 token"
+		addItem(resp, title)
+
 	} else {
 		result := showTokenInfo(token)
-		subtitle = result
 		var tokenJSONObject tokenObject
 		err := json.Unmarshal([]byte(result), &tokenJSONObject)
 		if err == nil {
 			if tokenJSONObject.ErrorCode > 0 {
-				title = fmt.Sprintf("错误代码 %v => %v\n", tokenJSONObject.ErrorCode, tokenJSONObject.Error)
+				title := fmt.Sprintf("错误代码: %v", tokenJSONObject.ErrorCode)
+				addItem(resp, title)
+				addItem(resp, "错误信息:"+tokenJSONObject.Error)
 			} else {
-				title = fmt.Sprintf("%v 秒(%v分钟)\n", tokenJSONObject.ExpireIn, tokenJSONObject.ExpireIn/60)
+				title := fmt.Sprintf("%v 秒(%v分钟)\n", tokenJSONObject.ExpireIn, tokenJSONObject.ExpireIn/60)
+				addItem(resp, title)
+				t := time.Unix(0, int64(tokenJSONObject.ExpireIn+tokenJSONObject.CreateAt)*1000*int64(time.Millisecond))
+				addItem(resp, "到期时间: "+fmt.Sprintf("%v\n", t.Format("2006-01-02 15:04:05")))
 			}
 		} else {
-			title = "查询出错啦"
+			title := "查询出错啦"
+			addItem(resp, title)
 		}
 	}
-	resp := alfred.NewResponse()
-	item := alfred.ResponseItem{
-		Valid:    true,
-		UID:      strconv.FormatInt(int64(time.Now().Nanosecond()), 10),
-		Title:    title,
-		Subtitle: subtitle,
-		Arg:      "",
-		Icon:     "",
-	}
-	resp.AddItem(&item)
 
 	xml, err := resp.ToXML()
 	if err != nil {
@@ -97,4 +94,16 @@ func main() {
 		return
 	}
 	fmt.Println(xml)
+}
+
+func addItem(response *alfred.Response, title string) {
+	item := alfred.ResponseItem{
+		Valid:    true,
+		UID:      strconv.FormatInt(int64(time.Now().Nanosecond()), 10),
+		Title:    title,
+		Subtitle: "",
+		Arg:      "",
+		Icon:     "",
+	}
+	response.AddItem(&item)
 }
