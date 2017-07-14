@@ -77,6 +77,8 @@ func main() {
 				addItem(resp, title)
 				t := time.Unix(0, int64(tokenJSONObject.ExpireIn+tokenJSONObject.CreateAt)*1000*int64(time.Millisecond))
 				addItem(resp, "到期时间: "+fmt.Sprintf("%v\n", t.Format("2006-01-02 15:04:05")))
+				addItem(resp, "UID: "+fmt.Sprintf("%v\n", tokenJSONObject.UID))
+				addItem(resp, "AppKey: "+fmt.Sprintf("%v\n", tokenJSONObject.Appkey))
 			}
 		} else {
 			title := "查询出错啦"
