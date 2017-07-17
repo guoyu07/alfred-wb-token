@@ -76,6 +76,8 @@ func main() {
 				title := fmt.Sprintf("%v 秒(%v分钟)\n", tokenJSONObject.ExpireIn, tokenJSONObject.ExpireIn/60)
 				addItem(resp, title)
 				t := time.Unix(0, int64(tokenJSONObject.ExpireIn+tokenJSONObject.CreateAt)*1000*int64(time.Millisecond))
+				createAt := time.Unix(0, int64(tokenJSONObject.CreateAt)*1000*int64(time.Millisecond))
+				addItem(resp, "创建时间: "+fmt.Sprintf("%v\n", createAt.Format("2006-01-02 15:04:05")))
 				addItem(resp, "到期时间: "+fmt.Sprintf("%v\n", t.Format("2006-01-02 15:04:05")))
 				addItem(resp, "UID: "+fmt.Sprintf("%v\n", tokenJSONObject.UID))
 				addItem(resp, "AppKey: "+fmt.Sprintf("%v\n", tokenJSONObject.Appkey))
